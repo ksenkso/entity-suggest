@@ -1,5 +1,6 @@
 <template>
   <div
+    v-click-outside="hideDropdown"
     class="suggest"
   >
     <div class="label">
@@ -161,6 +162,9 @@ export default {
     remove (index) {
       this.$emit('update:modelValue', this.modelValue.filter((_, i) => i !== index));
     },
+    hideDropdown () {
+      this.showDropdown = false;
+    }
   }
 };
 </script>

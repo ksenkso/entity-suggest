@@ -1,5 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import './styles/style.scss';
+import { vClickOutside } from '@/directives/vClickOutside.js';
 
-createApp(App).mount('#app');
+const app = createApp(App);
+
+app.directive('click-outside', vClickOutside);
+
+app.mount('#app');
