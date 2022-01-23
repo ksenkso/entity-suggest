@@ -1,26 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <EntitySuggestions
+      v-model="entities"
+    />
+    <pre>{{ JSON.stringify(entities, undefined, 2) }}</pre>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import EntitySuggestions from "@/components/EntitySuggestions/EntitySuggestions.vue";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    EntitySuggestions,
+  },
+  data() {
+    return {
+      entities: [],
+    };
   }
-}
+};
 </script>
-
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+pre {
+  max-width: 100%;
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: #f0f0f0;
 }
 </style>
