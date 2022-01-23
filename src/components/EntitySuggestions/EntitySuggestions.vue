@@ -2,6 +2,8 @@
   <SuggestionsList
     v-model="suggestions.value"
     :options="suggestions.options"
+    :multiple="multiple"
+    :max-selected="maxSelected"
     label="Пользователь или компания"
     @search="onSearch"
   >
@@ -24,25 +26,51 @@ import UserItem from '@/components/EntitySuggestions/UserItem.vue';
 import CompanyItem from '@/components/EntitySuggestions/CompanyItem.vue';
 import DropdownItem from '@/components/SuggestionsList/DropdownItem.vue';
 import { alias } from '@/components/EntitySuggestions/utils.js';
+import { watch } from 'vue';
 
-const url = 'https://habr.com/kek/v2/publication/suggest-mention';
+const url = process.env.VUE_APP_SUGGESTIONS_URL;
 
 export default {
   name: 'EntitySuggestions',
   components: { DropdownItem, SuggestionsList },
-  setup () {
+  props: {
+    modelValue: {
+      type: Array,
+      required: true,
+    },
+    multiple: {
+      type: Boolean,
+    },
+    maxSelected: {
+      type: Number,
+      default: NaN,
+    },
+  },
+  emits: ['update:modelValue'],
+  setup (props, { emit }) {
     const { suggestions, search, select } = useSuggestions({
       responseAdapter (body) {
         return body.data;
       }
     });
 
+    if (props.modelValue.length) {
+      select(props.modelValue);
+    }
+
+    watch(() => suggestions.value, (newValue) => {
+      emit('update:modelValue', newValue);
+    });
+
+    watch(() => props.modelValue, (newValue) => {
+      select(newValue);
+    });
+
     const onSearch = (query) =>  {
       const params = new URLSearchParams({ q: query });
-      console.log(params.toString());
 
       search({
-        url: `${url}?${params.toString()}`,
+        url: `${url}?${params}`,
         method: 'GET',
       });
     };
