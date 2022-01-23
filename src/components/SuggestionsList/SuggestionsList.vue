@@ -33,13 +33,14 @@
         v-model="query"
         type="text"
         class="input"
+        :disabled="maxReached"
         v-bind="$attrs"
         @focus="hasFocus = true"
         @blur="hasFocus = false"
       >
     </div>
     <div
-      v-show="showDropdown"
+      v-show="showDropdown && !maxReached"
       class="dropdown__container"
     >
       <div class="dropdown">
@@ -65,7 +66,9 @@ import DropdownItem from '@/components/SuggestionsList/DropdownItem.vue';
 
 export default {
   name: 'SuggestionsList',
+
   components: { DropdownItem, Tag },
+
   props: {
     modelValue: {
       type: Array,
@@ -124,11 +127,15 @@ export default {
 
   computed: {
     shouldSearch () {
-      return this.query.length >= this.minCharacters;
+      return this.query.length >= this.minCharacters && !this.maxReached;
     },
 
     inputContainerClass () {
       return ['input-container', this.hasFocus && 'input-container_focus'];
+    },
+
+    maxReached () {
+      return this.multiple && this.maxSelected === this.modelValue.length;
     }
   },
 
@@ -140,6 +147,7 @@ export default {
         this.$emit('search', query);
       }
     },
+
     options (value) {
       if (value.length) {
         this.showDropdown = true;
@@ -151,17 +159,23 @@ export default {
     getOptionKey (item, index) {
       return this.optionKey ? item[this.optionKey] : index;
     },
+
     select (item) {
       const value = this.multiple ? this.modelValue.concat(item) : [item];
+      const maxSelectedReached = this.multiple && this.maxSelected === value.length;
+
       this.$emit('update:modelValue', value);
-      if (!this.multiple || (this.multiple && this.maxSelected === value.length)) {
+
+      if (!this.multiple || maxSelectedReached) {
         this.showDropdown = false;
       }
       this.query = '';
     },
+
     remove (index) {
       this.$emit('update:modelValue', this.modelValue.filter((_, i) => i !== index));
     },
+
     hideDropdown () {
       this.showDropdown = false;
     }
