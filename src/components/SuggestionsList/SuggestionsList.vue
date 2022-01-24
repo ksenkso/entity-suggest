@@ -44,10 +44,14 @@
       >
     </div>
     <div
-      v-show="showDropdown && !maxReached"
+      v-show="(loading || showDropdown) && !maxReached"
       class="dropdown__container"
       :style="dropdownStyle"
     >
+      <Loader
+        v-if="loading"
+        :delay="200"
+      />
       <div
         ref="dropdown"
         class="dropdown"
@@ -73,16 +77,20 @@
 import Tag from '@/components/SuggestionsList/Tag.vue';
 import DropdownItem from '@/components/SuggestionsList/DropdownItem.vue';
 import { nextTick } from 'vue';
+import Loader from '@/components/Loader.vue';
 
 export default {
   name: 'SuggestionsList',
 
-  components: { DropdownItem, Tag },
+  components: { Loader, DropdownItem, Tag },
 
   props: {
     modelValue: {
       type: Array,
       required: true,
+    },
+    loading: {
+      type: Boolean,
     },
     required: {
       type: Boolean,
@@ -261,7 +269,7 @@ export default {
   color: #444444;
   border: 1px solid #d4dbdd;
   border-radius: $border-radius-small;
-  padding: 0 4px;
+  padding: 4px;
   width: 100%;
   min-height: 40px;
   min-width: 40px;
@@ -274,7 +282,7 @@ export default {
 
 .input {
   border: none;
-  height: 38px;
+  height: 30px;
   flex: 1;
   background-color: transparent;
   -webkit-appearance: none;
@@ -294,21 +302,29 @@ export default {
   flex-direction: column;
   width: 100%;
 
-
   &__container {
     top: calc(100% + 12px);
     left: 0;
     min-width: 240px;
     max-width: 100%;
+    min-height: 64px;
     position: absolute;
     overflow-y: auto;
     background: #fff;
     border-radius: 4px;
     box-shadow: 0 0 12px rgb(0 0 0 / 16%);
     color: #333;
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-top: 12px;
     white-space: normal;
   }
+}
+
+.loader {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
 }
 </style>

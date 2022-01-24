@@ -2,6 +2,7 @@
   <SuggestionsList
     v-model="suggestions.value"
     :options="suggestions.options"
+    :loading="suggestions.loading"
     option-key="id"
     :multiple="multiple"
     :max-selected="maxSelected"

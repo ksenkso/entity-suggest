@@ -33,7 +33,7 @@ export default {
 .tag {
   display: flex;
   align-items: baseline;
-  height: 28px;
+  height: 30px;
   margin-right: 4px;
   padding: 4px;
   border-radius: $border-radius-small;
