@@ -16,7 +16,10 @@
         </label>
       </slot>
     </div>
-    <div :class="inputContainerClass">
+    <div
+      ref="inputContainer"
+      :class="inputContainerClass"
+    >
       <Tag
         v-for="(item, index) in modelValue"
         :key="index"
@@ -44,8 +47,10 @@
       >
     </div>
     <div
-      v-show="(loading || error || showDropdown) && !maxReached"
+      v-show="showDropdown"
+      ref="dropdownContainer"
       class="dropdown__container"
+      :class="dropdownClass"
       :style="dropdownStyle"
     >
       <Loader
@@ -93,6 +98,8 @@ import Loader from '@/components/Loader.vue';
 import Error from '@/components/SuggestionsList/Error.vue';
 import NotFound from '@/components/SuggestionsList/NotFound.vue';
 import { debounce } from '@/lib/utils.js';
+
+const DROPDOWN_MARGIN = 12;
 
 export default {
   name: 'SuggestionsList',
@@ -160,15 +167,20 @@ export default {
   data () {
     return {
       query: '',
-      showDropdown: false,
+      forceDropdown: false,
       hasFocus: false,
       dropdownHeight: 'auto',
+      dropdownClass: '',
       activeItemIndex: -1,
       firstVisibleItemIndex: 0,
     };
   },
 
   computed: {
+    showDropdown () {
+      return (this.loading || this.error || this.forceDropdown) && !this.maxReached;
+    },
+
     shouldSearch () {
       return this.query.length >= this.minCharacters && !this.maxReached;
     },
@@ -201,19 +213,35 @@ export default {
       }
 
       if (!query) {
-        this.showDropdown = false;
+        this.forceDropdown = false;
       }
     },
 
     async options () {
-      this.showDropdown = true;
+      this.forceDropdown = true;
       await nextTick();
       this.recalculateDropdownHeight();
-    }
+    },
+
+    showDropdown (shouldShow) {
+      if (shouldShow) {
+        this.recalculateDropdownPosition();
+      }
+    },
   },
 
   created () {
     this.emitSearch = debounce(this.emitSearch, this.debounce);
+  },
+
+  mounted () {
+    window.addEventListener('resize', this.recalculateDropdownPosition);
+    document.addEventListener('scroll', this.recalculateDropdownPosition);
+  },
+
+  beforeUnmount () {
+    window.removeEventListener('resize', this.recalculateDropdownPosition);
+    document.removeEventListener('scroll', this.recalculateDropdownPosition);
   },
 
   methods: {
@@ -229,7 +257,7 @@ export default {
       this.$emit('update:modelValue', value);
 
       if (!this.multiple || maxSelectedReached) {
-        this.showDropdown = false;
+        this.forceDropdown = false;
         this.query = '';
       }
     },
@@ -254,13 +282,13 @@ export default {
     },
 
     hideDropdown () {
-      this.showDropdown = false;
+      this.forceDropdown = false;
     },
 
     onFocus () {
       this.hasFocus = true;
       if (this.shouldSearch) {
-        this.showDropdown = true;
+        this.forceDropdown = true;
       }
     },
 
@@ -275,6 +303,16 @@ export default {
       } else {
         this.dropdownHeight = 'auto';
       }
+    },
+
+    recalculateDropdownPosition () {
+      const inputRect = this.$refs.inputContainer.getBoundingClientRect();
+      const bottomSpace = window.innerHeight - (inputRect.bottom + DROPDOWN_MARGIN);
+      const topSpace = inputRect.top - DROPDOWN_MARGIN;
+
+      this.dropdownClass = topSpace > bottomSpace
+        ? 'dropdown__container_top'
+        : 'dropdown__container_bottom';
     }
   }
 };
@@ -351,6 +389,11 @@ export default {
     align-items: center;
     margin-top: 12px;
     white-space: normal;
+
+    &_top {
+      top: initial;
+      bottom: calc(100% + 12px);
+    }
   }
 }
 
