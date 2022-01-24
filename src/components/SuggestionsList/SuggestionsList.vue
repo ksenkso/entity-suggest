@@ -326,6 +326,7 @@ export default {
 
 .label {
   font-weight: bold;
+  margin-bottom: 4px;
 }
 
 .asterisk {

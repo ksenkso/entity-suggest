@@ -3,12 +3,9 @@
     <EntitySuggestions
       v-model="entities"
       multiple
+      required
       :max-selected="3"
     />
-    <button @click="entities = []">
-      clear
-    </button>
-    <pre>{{ JSON.stringify(entities, undefined, 2) }}</pre>
   </div>
 </template>
 

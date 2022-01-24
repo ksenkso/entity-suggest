@@ -7,6 +7,7 @@
     option-key="id"
     :multiple="multiple"
     :max-selected="maxSelected"
+    :required="required"
     label="Пользователь или компания"
     @search="onSearch"
   >
@@ -48,6 +49,9 @@ export default {
       type: Number,
       default: NaN,
     },
+    required: {
+      type: Boolean,
+    }
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
