@@ -3,6 +3,7 @@
     v-model="suggestions.value"
     :options="suggestions.options"
     :loading="suggestions.loading"
+    :error="suggestions.error"
     option-key="id"
     :multiple="multiple"
     :max-selected="maxSelected"

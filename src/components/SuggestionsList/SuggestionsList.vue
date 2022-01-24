@@ -44,7 +44,7 @@
       >
     </div>
     <div
-      v-show="(loading || showDropdown) && !maxReached"
+      v-show="(loading || error || showDropdown) && !maxReached"
       class="dropdown__container"
       :style="dropdownStyle"
     >
@@ -52,6 +52,18 @@
         v-if="loading"
         :delay="200"
       />
+      <slot
+        v-if="error"
+        name="error"
+      >
+        <Error :error="error" />
+      </slot>
+      <slot
+        v-if="!loading && !error && !options.length"
+        name="not-found"
+      >
+        <NotFound />
+      </slot>
       <div
         ref="dropdown"
         class="dropdown"
@@ -78,11 +90,13 @@ import Tag from '@/components/SuggestionsList/Tag.vue';
 import DropdownItem from '@/components/SuggestionsList/DropdownItem.vue';
 import { nextTick } from 'vue';
 import Loader from '@/components/Loader.vue';
+import Error from '@/components/SuggestionsList/Error.vue';
+import NotFound from '@/components/SuggestionsList/NotFound.vue';
 
 export default {
   name: 'SuggestionsList',
 
-  components: { Loader, DropdownItem, Tag },
+  components: { NotFound, Error, Loader, DropdownItem, Tag },
 
   props: {
     modelValue: {
@@ -91,6 +105,10 @@ export default {
     },
     loading: {
       type: Boolean,
+    },
+    error: {
+      type: Object,
+      default: null,
     },
     required: {
       type: Boolean,
@@ -125,7 +143,7 @@ export default {
     maxSelected: {
       type: Number,
       default: NaN,
-    }
+    },
   },
 
   emits: [
@@ -233,7 +251,7 @@ export default {
     },
 
     recalculateDropdownHeight () {
-      if (isFinite(this.dropdownDisplayCount)) {
+      if (isFinite(this.dropdownDisplayCount) && this.$refs.dropdown.childElementCount) {
         const numberOfItemsToShow = Math.min(this.dropdownDisplayCount, this.$refs.dropdown.childElementCount);
         let height = 0;
         for (let i = 0; i < numberOfItemsToShow; i++) {

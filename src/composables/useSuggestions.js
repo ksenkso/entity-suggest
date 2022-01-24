@@ -1,13 +1,20 @@
 import { reactive } from 'vue';
 import { debounce, identity } from '@/lib/utils.js';
-
+/**
+ * @typedef {{
+ *   code: number;
+ *   message: string;
+ *   data: unknown;
+ *   additional: unknown;
+ * }} ApiError
+ */
 /**
  * @param {object}
  * @param {any[]} initialValue
  * @param {(data: any) => any} responseAdapter
  * @param {number} [debounceTimeout=300]
  * @return {{
- *  suggestions: {options: *[], loading: boolean, error: Error | null, value: *[]},
+ *  suggestions: {options: *[], loading: boolean, error: ApiError | null, value: *[]},
  *  search: (config: Request) => Promise<void>
  * }}
  */
@@ -32,17 +39,22 @@ export const useSuggestions = ({
     }
 
     suggestions.loading = true;
+    suggestions.error = null;
 
     return fetch(requestConfig.url, {
       signal: abortController.signal,
       ...requestConfig,
     })
-      .then(response => response.json())
-      .then(options => {
-        suggestions.options = responseAdapter(options);
+      .then(async (response) => {
+        const body = await response.json();
+        if (response.ok) {
+          suggestions.options = responseAdapter(body);
+        } else {
+          suggestions.error = body;
+        }
       })
       .catch(error => {
-        suggestions.error = error;
+        console.error(error);
       })
       .finally(() => {
         suggestions.loading = false;
