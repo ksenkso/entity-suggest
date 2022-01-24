@@ -1,10 +1,12 @@
 <template>
-  <button
+  <li
+    role="option"
     :class="className"
+    :aria-selected="selected"
     @click="$emit('select')"
   >
     <slot />
-  </button>
+  </li>
 </template>
 
 <script>
@@ -12,6 +14,9 @@ export default {
   name: 'DropdownItem',
   props: {
     active: {
+      type: Boolean,
+    },
+    selected: {
       type: Boolean,
     },
   },
@@ -30,16 +35,14 @@ export default {
 .dropdown-item {
   border: none;
   background: #fff;
-  box-sizing: border-box;
   cursor: pointer;
   display: block;
   font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.125rem;
   padding: 0;
-  position: relative;
-  text-decoration: none;
   @include font;
+  button {
+    width: 100%;
+  }
 
   &:hover, &_active {
     background: #eee;

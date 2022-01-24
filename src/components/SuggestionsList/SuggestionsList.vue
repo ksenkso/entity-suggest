@@ -39,6 +39,9 @@
         :disabled="maxReached"
         v-bind="$attrs"
         autocomplete="off"
+        aria-autocomplete="list"
+        :aria-expanded="showDropdown"
+        :aria-owns="`${id}_list`"
         @focus="onFocus"
         @blur="hasFocus = false"
         @keyup.up="moveSelection(-1)"
@@ -69,14 +72,18 @@
       >
         <NotFound />
       </slot>
-      <div
+      <ul
+        :id="`${id}_list`"
         ref="dropdown"
         class="dropdown"
+        role="listbox"
       >
         <DropdownItem
           v-for="(item, index) in options"
           :key="item[optionKey]"
           :active="item[optionKey] === activeItemKey"
+          :selected="itemSelected(item)"
+          :index="index + 1"
           @select="select(item)"
         >
           <slot
@@ -85,7 +92,7 @@
             :index="index"
           />
         </DropdownItem>
-      </div>
+      </ul>
     </div>
   </div>
 </template>
@@ -376,6 +383,9 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 
   &__container {
     top: calc(100% + 12px);
