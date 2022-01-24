@@ -35,7 +35,8 @@
         class="input"
         :disabled="maxReached"
         v-bind="$attrs"
-        @focus="hasFocus = true"
+        autocomplete="off"
+        @focus="onFocus"
         @blur="hasFocus = false"
       >
     </div>
@@ -169,8 +170,8 @@ export default {
 
       if (!this.multiple || maxSelectedReached) {
         this.showDropdown = false;
+        this.query = '';
       }
-      this.query = '';
     },
 
     itemSelected (item) {
@@ -183,6 +184,13 @@ export default {
 
     hideDropdown () {
       this.showDropdown = false;
+    },
+
+    onFocus () {
+      this.hasFocus = true;
+      if (this.shouldSearch) {
+        this.showDropdown = true;
+      }
     }
   }
 };
