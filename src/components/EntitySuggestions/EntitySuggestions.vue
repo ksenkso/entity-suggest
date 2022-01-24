@@ -2,6 +2,7 @@
   <SuggestionsList
     v-model="suggestions.value"
     :options="suggestions.options"
+    option-key="id"
     :multiple="multiple"
     :max-selected="maxSelected"
     label="Пользователь или компания"
@@ -48,22 +49,23 @@ export default {
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
-    const { suggestions, search, select } = useSuggestions({
+    const { suggestions, search } = useSuggestions({
+      initialValue: props.modelValue,
       responseAdapter (body) {
-        return body.data;
+        return body.data.map((entity) => {
+          entity.id = `${entity.type}-${entity.alias}`;
+
+          return entity;
+        });
       }
     });
-
-    if (props.modelValue.length) {
-      select(props.modelValue);
-    }
 
     watch(() => suggestions.value, (newValue) => {
       emit('update:modelValue', newValue);
     });
 
     watch(() => props.modelValue, (newValue) => {
-      select(newValue);
+      suggestions.value = newValue;
     });
 
     const onSearch = (query) =>  {
@@ -78,7 +80,6 @@ export default {
     return {
       suggestions,
       onSearch,
-      select,
       search,
       alias,
     };
