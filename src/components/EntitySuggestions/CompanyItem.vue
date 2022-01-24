@@ -1,29 +1,31 @@
 <template>
-  <div class="company-item">
-    <img
-      :src="avatar"
-      :alt="name || prefixedAlias"
-      :aria-label="name || prefixedAlias"
-      class="avatar"
-    >
-    <div class="company-info">
-      <div class="name">
+  <span class="entity-item">
+    <span class="entity-item__avatar">
+      <Avatar
+        type="company"
+        :url="avatar"
+        :name="name || prefixedAlias"
+      />
+    </span>
+    <span class="entity-item__info">
+      <span class="entity-item__name">
         {{ name || prefixedAlias }}
-      </div>
-      <div class="alias">
-        {{ prefixedAlias }}
-      </div>
-    </div>
-  </div>
+      </span>
+      <span class="entity-item__alias">
+        Компания
+      </span>
+    </span>
+  </span>
 </template>
 
 <script>
 import { computed } from 'vue';
 import { alias } from '@/components/EntitySuggestions/utils.js';
+import Avatar from '@/components/Avatar.vue';
 
 export default {
   name: 'CompanyItem',
-
+  components: { Avatar },
   props: {
     name: {
       type: String,
@@ -46,6 +48,6 @@ export default {
   }
 };
 </script>
-<style>
-
+<style lang="scss" scoped>
+@import "~@/styles/components/EntityItem.scss";
 </style>

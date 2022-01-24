@@ -1,17 +1,17 @@
 <template>
-  <span class="user-item">
-    <span class="avatar-container">
+  <span class="entity-item">
+    <span class="entity-item__avatar">
       <Avatar
         type="user"
         :url="avatar"
         :name="name || prefixedAlias"
       />
     </span>
-    <span class="user-info">
-      <span class="name">
+    <span class="entity-item__info">
+      <span class="entity-item__name">
         {{ name || prefixedAlias }}
       </span>
-      <span class="alias">
+      <span class="entity-item__alias">
         {{ prefixedAlias }}
       </span>
     </span>
@@ -49,23 +49,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@import "~@/styles/_variables.scss";
-
-.user-item {
-  display: flex;
-  align-items: center;
-}
-
-.avatar-container {
-  border-radius: $border-radius;
-  margin-right: 12px;
-  width: 32px;
-  height: 32px;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  row-gap: 4px;
-}
+@import "~@/styles/components/EntityItem.scss";
 </style>

@@ -15,19 +15,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~@/styles/_mixins.scss";
+
 .dropdown-item {
   border: none;
   background: #fff;
   box-sizing: border-box;
-  color: #333;
   cursor: pointer;
   display: block;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.125rem;
-  padding: 15px 20px;
+  padding: 0;
   position: relative;
   text-decoration: none;
+  @include font;
 
   &:hover {
     background: #eee;
