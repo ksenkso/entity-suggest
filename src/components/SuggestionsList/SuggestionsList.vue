@@ -99,11 +99,10 @@ export default {
     },
     optionKey: {
       type: String,
-      default: null,
+      required: true,
     },
     multiple: {
       type: Boolean,
-      default: false,
     },
     maxSelected: {
       type: Number,
@@ -161,6 +160,8 @@ export default {
     },
 
     select (item) {
+      if (this.itemSelected(item)) return;
+
       const value = this.multiple ? this.modelValue.concat(item) : [item];
       const maxSelectedReached = this.multiple && this.maxSelected === value.length;
 
@@ -170,6 +171,10 @@ export default {
         this.showDropdown = false;
       }
       this.query = '';
+    },
+
+    itemSelected (item) {
+      return !!this.modelValue.find((option) => option[this.optionKey] === item[this.optionKey]);
     },
 
     remove (index) {
