@@ -3,20 +3,22 @@ import { debounce, identity } from '@/lib/utils.js';
 
 /**
  * @param {object}
+ * @param {any[]} initialValue
  * @param {(data: any) => any} responseAdapter
  * @param {number} [debounceTimeout=300]
  * @return {{
- *  suggestions: {options: *[], loading: boolean, error: null, value: *[]},
- *  makeRequest: (config: Request) => Promise<void>
+ *  suggestions: {options: *[], loading: boolean, error: Error | null, value: *[]},
+ *  search: (config: Request) => Promise<void>
  * }}
  */
 export const useSuggestions = ({
+  initialValue = [],
   debounceTimeout = 300,
   responseAdapter = identity,
 } = {}) => {
   const suggestions = reactive({
     loading: false,
-    options: [],
+    options: initialValue,
     error: null,
     value: [],
   });
@@ -48,17 +50,8 @@ export const useSuggestions = ({
       });
   };
 
-  const select = (options) => {
-    if (Array.isArray(options)) {
-      suggestions.value = options;
-    } else {
-      suggestions.value = [options];
-    }
-  };
-
   return {
     suggestions,
     search: debounce(makeRequest, debounceTimeout),
-    select,
   };
 };
