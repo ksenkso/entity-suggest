@@ -1,5 +1,7 @@
 # habr-test-task
 
+[Live demo](https://ksenkso.github.io/entity-suggest/)
+
 ## Project setup
 ```
 npm install
