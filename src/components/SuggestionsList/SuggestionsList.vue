@@ -38,6 +38,9 @@
         autocomplete="off"
         @focus="onFocus"
         @blur="hasFocus = false"
+        @keyup.up="moveSelection(-1)"
+        @keyup.down="moveSelection(1)"
+        @keyup.enter="select(options[activeItemIndex])"
       >
     </div>
     <div
@@ -51,7 +54,8 @@
       >
         <DropdownItem
           v-for="(item, index) in options"
-          :key="getOptionKey(item, index)"
+          :key="item[optionKey]"
+          :active="item[optionKey] === activeItemKey"
           @select="select(item)"
         >
           <slot
@@ -128,6 +132,8 @@ export default {
       showDropdown: false,
       hasFocus: false,
       dropdownHeight: 'auto',
+      activeItemIndex: -1,
+      firstVisibleItemIndex: 0,
     };
   },
 
@@ -148,6 +154,10 @@ export default {
       return {
         maxHeight: this.dropdownHeight,
       };
+    },
+
+    activeItemKey () {
+      return this.options[this.activeItemIndex]?.[this.optionKey];
     }
   },
 
@@ -170,12 +180,8 @@ export default {
   },
 
   methods: {
-    getOptionKey (item, index) {
-      return this.optionKey ? item[this.optionKey] : index;
-    },
-
     select (item) {
-      if (this.itemSelected(item)) return;
+      if (!item || this.itemSelected(item)) return;
 
       const value = this.multiple ? this.modelValue.concat(item) : [item];
       const maxSelectedReached = this.multiple && this.maxSelected === value.length;
@@ -185,6 +191,17 @@ export default {
       if (!this.multiple || maxSelectedReached) {
         this.showDropdown = false;
         this.query = '';
+      }
+    },
+
+    moveSelection (shift) {
+      const rotate = (amount, from, mod) => (amount + from + mod) % mod;
+
+      this.activeItemIndex = rotate(shift, this.activeItemIndex, this.options.length);
+      const isVisible = this.activeItemIndex >= this.firstVisibleItemIndex && this.activeItemIndex < this.firstVisibleItemIndex + this.dropdownDisplayCount;
+      if (!isVisible) {
+        this.$refs.dropdown.children.item(this.activeItemIndex).scrollIntoView(shift < 0);
+        this.firstVisibleItemIndex = rotate(shift, this.firstVisibleItemIndex, this.dropdownDisplayCount + 1);
       }
     },
 

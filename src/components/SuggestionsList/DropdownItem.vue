@@ -1,7 +1,8 @@
 <template>
   <button
-    class="dropdown-item"
+    :class="className"
     @click="$emit('select')"
+    @mouseenter="onMouseEnter"
   >
     <slot />
   </button>
@@ -10,7 +11,24 @@
 <script>
 export default {
   name: 'DropdownItem',
-  emits: ['select']
+  props: {
+    active: {
+      type: Boolean,
+    },
+  },
+  emits: ['select', 'deactivate'],
+  computed: {
+    className () {
+      return ['dropdown-item', this.active && 'dropdown-item_active'];
+    }
+  },
+  methods: {
+    onMouseEnter () {
+      if (!this.active) {
+        this.$emit('deactivate');
+      }
+    }
+  }
 };
 </script>
 
@@ -31,9 +49,8 @@ export default {
   text-decoration: none;
   @include font;
 
-  &:hover {
+  &:hover, &_active {
     background: #eee;
-    opacity: 1;
   }
 }
 </style>
