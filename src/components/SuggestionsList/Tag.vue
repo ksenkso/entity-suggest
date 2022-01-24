@@ -36,7 +36,7 @@ export default {
   height: 28px;
   margin-right: 4px;
   padding: 4px;
-  border-radius: 3px;
+  border-radius: $border-radius-small;
   background-color: $brand-color;
   color: $white;
   font-size: 14px;

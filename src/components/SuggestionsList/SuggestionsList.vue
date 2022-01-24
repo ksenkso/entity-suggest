@@ -208,7 +208,7 @@ export default {
   position: relative;
   color: #444444;
   border: 1px solid #d4dbdd;
-  border-radius: 3px;
+  border-radius: $border-radius-small;
   padding: 0 4px;
   width: 100%;
   min-height: 40px;
