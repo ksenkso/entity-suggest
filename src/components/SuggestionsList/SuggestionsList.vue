@@ -43,8 +43,12 @@
     <div
       v-show="showDropdown && !maxReached"
       class="dropdown__container"
+      :style="dropdownStyle"
     >
-      <div class="dropdown">
+      <div
+        ref="dropdown"
+        class="dropdown"
+      >
         <DropdownItem
           v-for="(item, index) in options"
           :key="getOptionKey(item, index)"
@@ -64,6 +68,7 @@
 <script>
 import Tag from '@/components/SuggestionsList/Tag.vue';
 import DropdownItem from '@/components/SuggestionsList/DropdownItem.vue';
+import { nextTick } from 'vue';
 
 export default {
   name: 'SuggestionsList',
@@ -92,7 +97,7 @@ export default {
     },
     dropdownDisplayCount: {
       type: Number,
-      default: 4,
+      default: 3,
     },
     options: {
       type: Array,
@@ -122,6 +127,7 @@ export default {
       query: '',
       showDropdown: false,
       hasFocus: false,
+      dropdownHeight: 'auto',
     };
   },
 
@@ -136,6 +142,12 @@ export default {
 
     maxReached () {
       return this.multiple && this.maxSelected === this.modelValue.length;
+    },
+
+    dropdownStyle () {
+      return {
+        maxHeight: this.dropdownHeight,
+      };
     }
   },
 
@@ -148,10 +160,12 @@ export default {
       }
     },
 
-    options (value) {
+    async options (value) {
       if (value.length) {
         this.showDropdown = true;
       }
+      await nextTick();
+      this.recalculateDropdownHeight();
     }
   },
 
@@ -190,6 +204,19 @@ export default {
       this.hasFocus = true;
       if (this.shouldSearch) {
         this.showDropdown = true;
+      }
+    },
+
+    recalculateDropdownHeight () {
+      if (isFinite(this.dropdownDisplayCount)) {
+        const numberOfItemsToShow = Math.min(this.dropdownDisplayCount, this.$refs.dropdown.childElementCount);
+        let height = 0;
+        for (let i = 0; i < numberOfItemsToShow; i++) {
+          height += this.$refs.dropdown.children[i].clientHeight;
+        }
+        this.dropdownHeight = `${height}px`;
+      } else {
+        this.dropdownHeight = 'auto';
       }
     }
   }
@@ -257,7 +284,7 @@ export default {
     min-width: 240px;
     max-width: 100%;
     position: absolute;
-    overflow: hidden;
+    overflow-y: auto;
     background: #fff;
     border-radius: 4px;
     box-shadow: 0 0 12px rgb(0 0 0 / 16%);
