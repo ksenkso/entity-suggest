@@ -2,6 +2,8 @@
 
 [Live demo](https://ksenkso.github.io/entity-suggest/)
 
+Перед сборкой скопируйте содержимое файла `.env.example` в `.env.local`.
+
 ## Project setup
 ```
 npm install
