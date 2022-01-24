@@ -223,9 +223,11 @@ export default {
       this.recalculateDropdownHeight();
     },
 
-    showDropdown (shouldShow) {
+    async showDropdown (shouldShow) {
       if (shouldShow) {
         this.recalculateDropdownPosition();
+        await nextTick();
+        this.$refs.dropdownContainer.scrollTo(0, 0);
       }
     },
   },
@@ -248,6 +250,7 @@ export default {
     emitSearch (query) {
       this.$emit('search', query);
     },
+
     select (item) {
       if (!item || this.itemSelected(item)) return;
 
@@ -355,6 +358,7 @@ export default {
   border: none;
   height: 30px;
   flex: 1;
+  min-width: 30px;
   background-color: transparent;
   -webkit-appearance: none;
   -moz-appearance: none;

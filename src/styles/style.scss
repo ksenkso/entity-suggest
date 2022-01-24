@@ -16,5 +16,10 @@ html, body, #app {
 }
 
 #app {
-  padding: 30px;
+  padding: 70px 30px;
+
+  @media screen and (max-width: 500px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }

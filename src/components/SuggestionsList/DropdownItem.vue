@@ -2,7 +2,6 @@
   <button
     :class="className"
     @click="$emit('select')"
-    @mouseenter="onMouseEnter"
   >
     <slot />
   </button>
@@ -16,19 +15,12 @@ export default {
       type: Boolean,
     },
   },
-  emits: ['select', 'deactivate'],
+  emits: ['select'],
   computed: {
     className () {
       return ['dropdown-item', this.active && 'dropdown-item_active'];
     }
   },
-  methods: {
-    onMouseEnter () {
-      if (!this.active) {
-        this.$emit('deactivate');
-      }
-    }
-  }
 };
 </script>
 

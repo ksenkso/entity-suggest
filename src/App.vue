@@ -2,9 +2,7 @@
   <div>
     <EntitySuggestions
       v-model="entities"
-      multiple
       required
-      :max-selected="3"
     />
   </div>
 </template>
@@ -24,13 +22,3 @@ export default {
   }
 };
 </script>
-<style>
-pre {
-  max-width: 100%;
-  overflow: auto;
-  padding: 4px;
-  border: 1px solid #eee;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-}
-</style>
