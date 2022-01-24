@@ -92,6 +92,7 @@ import { nextTick } from 'vue';
 import Loader from '@/components/Loader.vue';
 import Error from '@/components/SuggestionsList/Error.vue';
 import NotFound from '@/components/SuggestionsList/NotFound.vue';
+import { debounce } from '@/lib/utils.js';
 
 export default {
   name: 'SuggestionsList',
@@ -124,6 +125,10 @@ export default {
     minCharacters: {
       type: Number,
       default: 3,
+    },
+    debounce: {
+      type: Number,
+      default: 300,
     },
     dropdownDisplayCount: {
       type: Number,
@@ -192,20 +197,29 @@ export default {
       this.$emit('input', query);
 
       if (this.shouldSearch) {
-        this.$emit('search', query);
+        this.emitSearch(query);
+      }
+
+      if (!query) {
+        this.showDropdown = false;
       }
     },
 
-    async options (value) {
-      if (value.length) {
-        this.showDropdown = true;
-      }
+    async options () {
+      this.showDropdown = true;
       await nextTick();
       this.recalculateDropdownHeight();
     }
   },
 
+  created () {
+    this.emitSearch = debounce(this.emitSearch, this.debounce);
+  },
+
   methods: {
+    emitSearch (query) {
+      this.$emit('search', query);
+    },
     select (item) {
       if (!item || this.itemSelected(item)) return;
 

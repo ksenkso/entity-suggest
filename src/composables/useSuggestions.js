@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { debounce, identity } from '@/lib/utils.js';
+import { identity } from '@/lib/utils.js';
 /**
  * @typedef {{
  *   code: number;
@@ -12,7 +12,6 @@ import { debounce, identity } from '@/lib/utils.js';
  * @param {object}
  * @param {any[]} initialValue
  * @param {(data: any) => any} responseAdapter
- * @param {number} [debounceTimeout=300]
  * @return {{
  *  suggestions: {options: *[], loading: boolean, error: ApiError | null, value: *[]},
  *  search: (config: Request) => Promise<void>
@@ -20,7 +19,6 @@ import { debounce, identity } from '@/lib/utils.js';
  */
 export const useSuggestions = ({
   initialValue = [],
-  debounceTimeout = 300,
   responseAdapter = identity,
 } = {}) => {
   const suggestions = reactive({
@@ -30,18 +28,19 @@ export const useSuggestions = ({
     value: [],
   });
 
-  const abortController = new AbortController();
+  let abortController = new AbortController();
   let currentRequest = null;
 
   const makeRequest = (requestConfig) => {
     if (currentRequest) {
       abortController.abort();
+      abortController = new AbortController();
     }
 
     suggestions.loading = true;
     suggestions.error = null;
 
-    return fetch(requestConfig.url, {
+    currentRequest = fetch(requestConfig.url, {
       signal: abortController.signal,
       ...requestConfig,
     })
@@ -54,16 +53,18 @@ export const useSuggestions = ({
         }
       })
       .catch(error => {
-        console.error(error);
+        console.log(error);
       })
       .finally(() => {
         suggestions.loading = false;
         currentRequest = null;
       });
+
+    return currentRequest;
   };
 
   return {
     suggestions,
-    search: debounce(makeRequest, debounceTimeout),
+    search: makeRequest,
   };
 };

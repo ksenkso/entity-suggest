@@ -1,16 +1,19 @@
-export function debounce (fn, timeout) {
-  let debounced = false;
+export function debounce (func, wait) {
+  let timeout;
 
-  return function () {
-    if (debounced) return;
+  return function executedFunction () {
+    const context = this;
+    const args = arguments;
 
-    fn.apply(this, arguments);
+    const later = function () {
+      timeout = null;
 
-    debounced = true;
+      func.apply(context, args);
+    };
 
-    setTimeout(() => {
-      debounced = false;
-    }, timeout);
+    clearTimeout(timeout);
+
+    timeout = setTimeout(later, wait);
   };
 }
 
